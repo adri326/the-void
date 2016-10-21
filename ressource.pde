@@ -9,6 +9,10 @@ class Ressource {
 class RessourceStream {
   Ressource ressource;
   int number;
+  public RessourceStream(int p1, String p2) {
+    number = p1;
+    ressource = getRessourceByName(p2);
+  }
   public RessourceStream(int p1) {
     number = p1;
   }
@@ -19,16 +23,17 @@ class RessourceStream {
 class Structure {
   RessourceStream[] ressourceStreams;
   int amount;
+  String name;
   public Structure(int p1) {
     ressourceStreams = new RessourceStream[p1];
     for (int i = 0; i < p1; i++) {
       ressourceStreams[i] = new RessourceStream();
     }
   }
-  public Structure(int p1, int[] p2) {
-    ressourceStreams = new RessourceStream[p1];
-    for (int i = 0; i < p1; i++) {
-      ressourceStreams[i] = new RessourceStream(p2[i%p2.length]);
+  public Structure(String p1, String[] p2, int[] p3) {
+    ressourceStreams = new RessourceStream[p2.length];
+    for (int i = 0; i < p2.length; i++) {
+      ressourceStreams[i] = new RessourceStream(p3[i%p3.length], p2[i%p2.length]);
     }
   }
 }
