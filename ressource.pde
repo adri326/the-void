@@ -1,4 +1,6 @@
-class Ressource {
+// ressource.pde
+
+public class Ressource {
   int number;
   String name;
   public Ressource(String p1) {
@@ -6,7 +8,7 @@ class Ressource {
     number = 0;
   }
 }
-class RessourceStream {
+public class RessourceStream {
   Ressource ressource;
   int number;
   public RessourceStream(int p1, String p2) {
@@ -20,7 +22,7 @@ class RessourceStream {
     
   }
 }
-class Structure {
+public class Structure {
   RessourceStream[] ressourceStreams;
   int amount;
   String name;
@@ -35,10 +37,23 @@ class Structure {
     for (int i = 0; i < p2.length; i++) {
       ressourceStreams[i] = new RessourceStream(p3[i%p3.length], p2[i%p2.length]);
     }
+    name = p1;
+  }
+}
+public class VisualElement {
+  Structure structure;
+  int x, y;
+  public void draw(int sx, int sy, int zoom) {
+    hex(sx+x+y*0.4, sy+y*0.6, 16/zoom);
+  }
+  VisualElement(int p1, int p2, Structure p3) {
+    x = p1;
+    y = p2;
+    structure = p3;
   }
 }
 
-Ressource getRessourceByName(String name) {
+public Ressource getRessourceByName(String name) {
   Ressource result = null;
   if (ressources != null && ressources.length > 0) {
     for (int i = 0; i < ressources.length; i++) {

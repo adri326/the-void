@@ -1,9 +1,23 @@
+// sketch.pde : initialisation and random stuff
+
+HashMap map = new HashMap(1000);
 public void setup() {
   background(0);
   fill(255);
-  int pos = 0;
   textSize(16);
   log_("Starting...", pos++);
+  initRessources();
+  map = new HashMap();
+  
+  println(((VisualElement)map.get(coord(5, 6))).x);
+  timer.start();
+}
+int pos = 0;
+public void log_(String t, int pos) {
+  text(t, 8, pos*16+24);
+  println(t);
+}
+private void initRessources() {
   String[] ressourcesRaw = loadStrings("ressources.list");
   String[] structuresRaw = loadStrings("structures.list");
   if (ressourcesRaw != null) {
@@ -35,11 +49,4 @@ public void setup() {
     log_("Error while loading structures: file empty or not present", pos++);
     noLoop();
   }
-  timer.start();
-}
-public void draw() {
-  
-}
-public void log_(String t, int pos) {
-  text(t, 8, pos*16+24);
 }

@@ -1,3 +1,5 @@
+// timer.pde
+
 public Thread timer = new Thread(new Runnable() {
   public void run() {
     while (true) {

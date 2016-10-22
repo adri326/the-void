@@ -1,0 +1,184 @@
+package processing.test.the_void;
+
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class the_void extends PApplet {
+
+HashMap map = new HashMap(1000);
+public void setup() {
+  background(0);
+  fill(255);
+  textSize(16);
+  log_("Starting...", pos++);
+  initRessources();
+  map = new HashMap();
+  VisualElement ve = new VisualElement(5, 6, structures[0]);
+  map.put(coord(5, 6), ve);
+  println(((VisualElement)map.get(coord(5, 6))).x);
+  timer.start();
+}
+int pos = 0;
+public void log_(String t, int pos) {
+  text(t, 8, pos*16+24);
+  println(t);
+}
+private void initRessources() {
+  String[] ressourcesRaw = loadStrings("ressources.list");
+  String[] structuresRaw = loadStrings("structures.list");
+  if (ressourcesRaw != null) {
+    ressources = new Ressource[ressourcesRaw.length];
+    for (int i = 0; i < ressourcesRaw.length; i++) {
+      ressources[i] = new Ressource(ressourcesRaw[i]);
+      log_("Loaded "+ressourcesRaw[i], pos++);
+    }
+  } else {
+    log_("Error while loading ressources: file empty or not present", pos++);
+    noLoop();
+  }
+  if (structuresRaw != null) {
+    structures = new Structure[structuresRaw.length];
+    String[] names, exchanger;
+    int[] amount;
+    for (int i = 0; i < structuresRaw.length; i += 2) {
+      exchanger = structuresRaw[i+1].split(" ");
+      names = new String[(exchanger.length)/2];
+      amount = new int[(exchanger.length)/2];
+      for (int j = 0; j < (exchanger.length)/2; j += 1) {
+        names[j] = exchanger[j*2];
+        amount[j] = Integer.parseInt(exchanger[j*2+1]);
+      }
+      structures[i] = new Structure(structuresRaw[i], names, amount);
+      log_("Loaded "+structuresRaw[i], pos++);
+    }
+  } else {
+    log_("Error while loading structures: file empty or not present", pos++);
+    noLoop();
+  }
+}
+public Thread timer = new Thread(new Runnable() {
+  public void run() {
+    while (true) {
+      sleep(1000);
+    }
+  }
+  private void sleep(int t) {
+    try {
+      timer.sleep(t);
+    } catch (Exception e) {}
+  }
+});
+public class Ressource {
+  int number;
+  String name;
+  public Ressource(String p1) {
+    name = p1;
+    number = 0;
+  }
+}
+public class RessourceStream {
+  Ressource ressource;
+  int number;
+  public RessourceStream(int p1, String p2) {
+    number = p1;
+    ressource = getRessourceByName(p2);
+  }
+  public RessourceStream(int p1) {
+    number = p1;
+  }
+  public RessourceStream() {
+    
+  }
+}
+public class Structure {
+  RessourceStream[] ressourceStreams;
+  int amount;
+  String name;
+  public Structure(int p1) {
+    ressourceStreams = new RessourceStream[p1];
+    for (int i = 0; i < p1; i++) {
+      ressourceStreams[i] = new RessourceStream();
+    }
+  }
+  public Structure(String p1, String[] p2, int[] p3) {
+    ressourceStreams = new RessourceStream[p2.length];
+    for (int i = 0; i < p2.length; i++) {
+      ressourceStreams[i] = new RessourceStream(p3[i%p3.length], p2[i%p2.length]);
+    }
+    name = p1;
+  }
+}
+public class VisualElement {
+  Structure structure;
+  int x, y;
+  public void draw(int sx, int sy, int zoom) {
+    hex(sx+x+y*0.4f, sy+y*0.6f, 16/zoom);
+  }
+  VisualElement(int p1, int p2, Structure p3) {
+    x = p1;
+    y = p2;
+    structure = p3;
+  }
+}
+
+public Ressource getRessourceByName(String name) {
+  Ressource result = null;
+  if (ressources != null && ressources.length > 0) {
+    for (int i = 0; i < ressources.length; i++) {
+      if (ressources[i] != null) {
+        if (ressources[i].name.equals(name)) {
+          result = ressources[i];
+        }
+      }
+    }
+  }
+  return result;
+}
+
+Ressource[] ressources;
+Structure[] structures;
+
+float zoom = 1, sx = width/2, sy = height/2;
+public void draw() {
+  background(0);
+  hex(sx, sy, 64);
+}
+public void mouseDragged() {
+  sx -= (pmouseX-mouseX)*zoom;
+  sy -= (pmouseY-mouseY)*zoom;
+}
+public void hex(float x, float y, float size) {
+  final float wm = 0.5f, hm = 0.85f;
+  fill(255);
+  stroke(255);
+  strokeWeight(4);
+  line(x+size*wm, y-size*hm, x+size, y);
+  line(x+size*wm, y+size*hm, x+size, y);
+  line(x-size*wm, y-size*hm, x-size, y);
+  line(x-size*wm, y+size*hm, x-size, y);
+  line(x+size*wm, y+size*hm, x-size*wm, y+size*hm);
+  line(x+size*wm, y-size*hm, x-size*wm, y-size*hm);
+}
+
+public String coord(int x, int y) {
+  return ""+x+":"+y;
+}
+public int coordX(String c) {
+  return Integer.parseInt(c.split(":")[0]);
+}
+public int coordY(String c) {
+  return Integer.parseInt(c.split(":")[1]);
+}
+
+}
